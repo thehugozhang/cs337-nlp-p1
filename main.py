@@ -57,7 +57,6 @@ def process_tweet(tweet, **kwargs):
     category = kwargs.get('category', 'Best Actor')
     nominees = kwargs.get('nominees', [])
 
-    category = pos_tag_text(category)
     original_tweet = pos_tag_text(tweet, False, False)
     lowercase_original_tweet = pos_tag_text(tweet, True, False)
     filtered_tweet = pos_tag_text(tweet, False, True)
@@ -67,37 +66,65 @@ def process_tweet(tweet, **kwargs):
     # Grammar rule: optional determiner (DD), superlative adverb/adjective (best), any number of adjectives (JJ), noun (actor)
     # Ex. the (DD) Best (RBS) Supporting (JJ) Actress (NN)
     category_grammar = "Award Category: {<RBS|JJS><NN>*}"
-    original_category_chunks = chunk_tagged_text(category, category_grammar, True)
-    category_chunks = chunk_tagged_text(original_tweet, category_grammar, True)
-    print(original_category_chunks)
-    print(category_chunks)
+    category_chunks = chunk_tagged_text(lowercase_original_tweet, category_grammar, False)
 
     # Entity Name chunking RegEx.
     # Grammar rule: any number of proper singular noun followed by a verb (wins), following removing verbs.
     # Ex. Taron (NNP) Egerton (NNP) wins (VBZ).
     proper_entity_grammar = """Entity Name: {<NNP>*<VB.>}
                                             }<VB.>+{"""
-    entities = chunk_tagged_text(original_tweet, proper_entity_grammar, True)
-    print(entities)
+    entities = chunk_tagged_text(lowercase_original_tweet, proper_entity_grammar, False)
+
+    # category_chunks = ["best director"]
+    if len(category_chunks):
+    # if category in category_chunks:
+        print(category_chunks, entities)
+
+    # naive tallying:
+    if category in category_chunks:
+        return entities
+    else:
+        return []
 
 def main():
     """ Main entry point of the app """
 
-    # f = open('gg2013.json')
-    # data = json.load(f)
-    # count = 0
-    # for tweet in data:
-    #     print(tweet["text"])
-    #     count = count + 1
-    #     if count == 50: break
-    # f.close()
+    # process_tweet(tweet_ex_1["text"], category=chunked_category[0], nominees=[
+    #         "kathryn bigelow",
+    #         "ang lee",
+    #         "steven spielberg",
+    #         "quentin tarantino"
+    #      ])
 
-    process_tweet(tweet_ex_1["text"], category='best director - motion picture', nominees=[
+    f = open('gg2013.json')
+    data = json.load(f)
+
+    lim = 0
+    counts = dict()
+
+    chunked_category = chunk_tagged_text(pos_tag_text('best director - motion picture'), "Award Category: {<RBS|JJS><NN>*}", True)
+    print(chunked_category[0])
+
+    for tweet in data:
+
+        # Process individual tweet.
+        result = process_tweet(tweet["text"], category=chunked_category[0], nominees=[
             "kathryn bigelow",
             "ang lee",
             "steven spielberg",
             "quentin tarantino"
          ])
+
+        for entity in result:
+            counts[entity] = counts.get(entity, 0) + 1
+
+        lim = lim + 1
+        if lim % 1000 == 0: print(lim)
+        if lim == 5000: break
+
+    print("Dictionary after the increment of key : " + str(counts))
+
+    f.close()
 
 if __name__ == "__main__":
     """ This is executed when run from the command line """
