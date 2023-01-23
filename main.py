@@ -64,18 +64,18 @@ def process_tweet(tweet, **kwargs):
     # Grammar rule: optional determiner (DD), superlative adverb/adjective (best), any number of adjectives (JJ), noun (actor)
     # Ex. the (DD) Best (RBS) Supporting (JJ) Actress (NN)
     category_grammar = "Award Category: {<RBS|JJS><NN>*}"
-    category_chunks = chunk_tagged_text(lowercase_original_tweet, category_grammar, False)
+    category_chunks = chunk_tagged_text(lowercase_original_tweet, category_grammar, True)
 
     # Entity Name chunking RegEx.
     # Grammar rule: any number of proper singular noun followed by a verb (wins), following removing verbs.
     # Ex. Taron (NNP) Egerton (NNP) wins (VBZ).
     proper_entity_grammar = """Entity Name: {<NNP>*<VB.>}
                                             }<VB.>+{"""
-    entities = chunk_tagged_text(original_tweet, proper_entity_grammar, False)
+    entities = chunk_tagged_text(original_tweet, proper_entity_grammar, True)
 
     # category_chunks = ["best director"]
-    if category in category_chunks and len(entities):
     # if category in category_chunks:
+    if category in category_chunks and len(entities):
         print(category_chunks, entities)
 
     # naive tallying:
@@ -87,12 +87,6 @@ def process_tweet(tweet, **kwargs):
 def main():
     """ Main entry point of the app """
 
-    process_tweet(tweet_ex_1["text"], category=chunked_category[0], nominees=[
-            "kathryn bigelow",
-            "ang lee",
-            "steven spielberg",
-            "quentin tarantino"
-         ])
 
     f = open('gg2013.json')
     data = json.load(f)
@@ -102,6 +96,13 @@ def main():
 
     chunked_category = chunk_tagged_text(pos_tag_text('best director - motion picture'), "Award Category: {<RBS|JJS><NN>*}", True)
     print(chunked_category[0])
+
+    process_tweet(tweet_ex_1["text"], category=chunked_category[0], nominees=[
+            "kathryn bigelow",
+            "ang lee",
+            "steven spielberg",
+            "quentin tarantino"
+         ])
 
     for tweet in data:
 
