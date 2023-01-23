@@ -59,8 +59,6 @@ def process_tweet(tweet, **kwargs):
 
     original_tweet = pos_tag_text(tweet, False, False)
     lowercase_original_tweet = pos_tag_text(tweet, True, False)
-    filtered_tweet = pos_tag_text(tweet, False, True)
-    lowercase_filtered_tweet = pos_tag_text(tweet, True, True)
 
     # Award Category chunking RegEx.
     # Grammar rule: optional determiner (DD), superlative adverb/adjective (best), any number of adjectives (JJ), noun (actor)
@@ -73,10 +71,10 @@ def process_tweet(tweet, **kwargs):
     # Ex. Taron (NNP) Egerton (NNP) wins (VBZ).
     proper_entity_grammar = """Entity Name: {<NNP>*<VB.>}
                                             }<VB.>+{"""
-    entities = chunk_tagged_text(lowercase_original_tweet, proper_entity_grammar, False)
+    entities = chunk_tagged_text(original_tweet, proper_entity_grammar, False)
 
     # category_chunks = ["best director"]
-    if len(category_chunks):
+    if category in category_chunks and len(entities):
     # if category in category_chunks:
         print(category_chunks, entities)
 
@@ -89,12 +87,12 @@ def process_tweet(tweet, **kwargs):
 def main():
     """ Main entry point of the app """
 
-    # process_tweet(tweet_ex_1["text"], category=chunked_category[0], nominees=[
-    #         "kathryn bigelow",
-    #         "ang lee",
-    #         "steven spielberg",
-    #         "quentin tarantino"
-    #      ])
+    process_tweet(tweet_ex_1["text"], category=chunked_category[0], nominees=[
+            "kathryn bigelow",
+            "ang lee",
+            "steven spielberg",
+            "quentin tarantino"
+         ])
 
     f = open('gg2013.json')
     data = json.load(f)
@@ -120,7 +118,7 @@ def main():
 
         lim = lim + 1
         if lim % 1000 == 0: print(lim)
-        if lim == 5000: break
+        if lim == 100000: break
 
     print("Dictionary after the increment of key : " + str(counts))
 
