@@ -69,9 +69,8 @@ def get_actors(text):
     data = response.json()
     names = []
     for entity in data['ner']:
-        if entity['label'] == 'PERSON':
+        if entity['label'] == 'PERSON' and entity['entity'] != "Best Actress":
             names.append(entity['entity'])
-    # print(names)
     return names
 
 # award_list

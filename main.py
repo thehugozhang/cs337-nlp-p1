@@ -28,6 +28,135 @@ tweet_ex_1 = {"text": "WINNER: Ben Affleck wins best film director for â€œArgoâ€
 awards_list_1315 = ['cecil b. demille award', 'best motion picture - drama', 'best performance by an actress in a motion picture - drama', 'best performance by an actor in a motion picture - drama', 'best motion picture - comedy or musical', 'best performance by an actress in a motion picture - comedy or musical', 'best performance by an actor in a motion picture - comedy or musical', 'best animated feature film', 'best foreign language film', 'best performance by an actress in a supporting role in a motion picture', 'best performance by an actor in a supporting role in a motion picture', 'best director - motion picture', 'best screenplay - motion picture', 'best original score - motion picture', 'best original song - motion picture', 'best television series - drama', 'best performance by an actress in a television series - drama', 'best performance by an actor in a television series - drama', 'best television series - comedy or musical', 'best performance by an actress in a television series - comedy or musical', 'best performance by an actor in a television series - comedy or musical', 'best mini-series or motion picture made for television', 'best performance by an actress in a mini-series or motion picture made for television', 'best performance by an actor in a mini-series or motion picture made for television', 'best performance by an actress in a supporting role in a series, mini-series or motion picture made for television', 'best performance by an actor in a supporting role in a series, mini-series or motion picture made for television']
 
 
+answer_json = {
+    "host": "",
+    "cecil b. demille award": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best motion picture - drama": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best performance by an actress in a motion picture - drama": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best motion picture - comedy or musical": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best performance by an actress in a motion picture - comedy or musical": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best performance by an actor in a motion picture - comedy or musical": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best animated feature film": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best foreign language film": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best performance by an actress in a supporting role in a motion picture": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best performance by an actor in a supporting role in a motion picture": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best director - motion picture": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best screenplay - motion picture": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best original score - motion picture": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best original song - motion picture": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best television series - drama": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best performance by an actress in a television series - drama": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best performance by an actor in a television series - drama": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best television series - comedy or musical": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best performance by an actress in a television series - comedy or musical": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best performance by an actor in a television series - comedy or musical": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best mini-series or motion picture made for television": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best performance by an actress in a mini-series or motion picture made for television": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best performance by an actor in a mini-series or motion picture made for television": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best performance by an actress in a supporting role in a series, mini-series or motion picture made for television": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+    "best performance by an actor in a supporting role in a series, mini-series or motion picture made for television": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+}
+
 # cecil b. demille award
 
 # best motion picture - drama
@@ -43,6 +172,7 @@ awards_list_1315 = ['cecil b. demille award', 'best motion picture - drama', 'be
 
 people_awards = [    "best performance by an actress in a motion picture - drama",    "best performance by an actor in a motion picture - drama",    "best performance by an actress in a motion picture - comedy or musical",    "best performance by an actor in a motion picture - comedy or musical",    "best performance by an actress in a supporting role in a motion picture",    "best performance by an actor in a supporting role in a motion picture",    "best director - motion picture",    "best performance by an actress in a television series - drama",    "best performance by an actor in a television series - drama",    "best performance by an actress in a television series - comedy or musical",    "best performance by an actor in a television series - comedy or musical",    "best performance by an actress in a mini-series or motion picture made for television",    "best performance by an actor in a mini-series or motion picture made for television",    "best performance by an actress in a supporting role in a series, mini-series or motion picture made for television",    "best performance by an actor in a supporting role in a series, mini-series or motion picture made for television"]
 
+test_award = ["best performance by an actress in a motion picture - drama"]
 
 
 
@@ -123,8 +253,28 @@ def main():
     """ Main entry point of the app """
 
 
-    f = open('gg2013-parsed.json')
+    f = open('gg2013-winner.json')
     data = json.load(f)
+
+    h = open('gg2013-host.json')
+    host_data = json.load(h)
+    host_tally = dict()
+
+    lim = 0
+    for tweet in host_data:
+        tweet_text = tweet["text"]
+        result = get_actors(tweet_text)
+        for entity in result:
+            host_tally[entity] = host_tally.get(entity, 0) + 1
+        lim = lim + 1
+        if lim % 10 == 0: print(lim)
+        if lim == 100: break
+    
+    c = Counter(host_tally)
+    top_five_results = c.most_common(5)
+    print("Dictionary after the increment of key : " + str(host_tally))
+    print("Top five hosts:", top_five_results)
+    answer_json["hosts"] = top_five_results[0][0]
 
     lim = 0
     counts = dict()
@@ -139,7 +289,7 @@ def main():
     #         "quentin tarantino"
     #      ])
     print("hey", len(people_awards))
-    for award_category in people_awards:
+    for award_category in test_award:
         for tweet in data:
             tweet_text = tweet["text"]
             # Process individual tweet.
@@ -164,10 +314,14 @@ def main():
             lim = lim + 1
             if lim % 1000 == 0: print(award_category, lim)
         lim = 0
-        # print("Dictionary after the increment of key : " + str(counts))
+        print("Dictionary after the increment of key : " + str(counts))
         c = Counter(counts)
-        print(award_category, c.most_common(3))
+        top_three_results = c.most_common(3)
+        print(award_category, top_three_results)
+        answer_json[award_category]["winner"] = top_three_results[0][0]
         counts.clear()
+    with open('answers.json', 'w', encoding='utf-8') as f:
+        json.dump(answer_json, f, ensure_ascii=False, indent=4)
     f.close()
 
 if __name__ == "__main__":
