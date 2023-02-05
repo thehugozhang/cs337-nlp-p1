@@ -7,5 +7,12 @@ ratio = fuzz.partial_ratio(Str_A.lower(), Str_B.lower())
 
 print('Similarity score: {}'.format(ratio))
 
-def cluster_results_by_similarity:
-    
+import re
+
+string = 'This is laughing laugh'
+
+a = re.search(r'\b(lsdugh)\b', string)
+print(a)
+print(a.start())
+
+

@@ -3,7 +3,7 @@
 # from bs4 import BeautifulSoup
 # import re
 # import pandas as pd
-import framework
+import framework_system
 
 
 # # Downloading imdb top 250 movie's data

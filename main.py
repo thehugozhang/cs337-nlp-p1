@@ -19,7 +19,7 @@ from fuzzywuzzy import process
 # Other imports.
 import json
 from collections import Counter
-
+import re
 from regex_system import get_actors, get_award, award_type_check
 
 stop_words = set(stopwords.words("english"))
@@ -36,6 +36,11 @@ answer_json = {
         "winner": "",
     },
     "best motion picture - drama": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
+        "best performance by an actor in a motion picture - drama": {
         "presenters": [],
         "nominees": [],
         "winner": "",
@@ -172,7 +177,7 @@ answer_json = {
 
 people_awards = [    "best performance by an actress in a motion picture - drama",    "best performance by an actor in a motion picture - drama",    "best performance by an actress in a motion picture - comedy or musical",    "best performance by an actor in a motion picture - comedy or musical",    "best performance by an actress in a supporting role in a motion picture",    "best performance by an actor in a supporting role in a motion picture",    "best director - motion picture",    "best performance by an actress in a television series - drama",    "best performance by an actor in a television series - drama",    "best performance by an actress in a television series - comedy or musical",    "best performance by an actor in a television series - comedy or musical",    "best performance by an actress in a mini-series or motion picture made for television",    "best performance by an actor in a mini-series or motion picture made for television",    "best performance by an actress in a supporting role in a series, mini-series or motion picture made for television",    "best performance by an actor in a supporting role in a series, mini-series or motion picture made for television"]
 
-test_award = ["best performance by an actress in a motion picture - drama"]
+test_award = ["best performance by an actor in a motion picture - drama"]
 
 
 
@@ -253,12 +258,16 @@ def main():
     """ Main entry point of the app """
 
 
-    f = open('gg2013-winner.json')
-    data = json.load(f)
+    w = open('gg2013-winner.json')
+    data = json.load(w)
 
     h = open('gg2013-host.json')
     host_data = json.load(h)
     host_tally = dict()
+
+    p = open('gg2013-presenter.json')
+    presenter_data = json.load(p)
+    presenter_tally = dict()
 
     lim = 0
     for tweet in host_data:
@@ -268,13 +277,38 @@ def main():
             host_tally[entity] = host_tally.get(entity, 0) + 1
         lim = lim + 1
         if lim % 10 == 0: print(lim)
-        if lim == 100: break
+        if lim == 1: break
     
     c = Counter(host_tally)
-    top_five_results = c.most_common(5)
+    top_two_results = c.most_common(2)
     print("Dictionary after the increment of key : " + str(host_tally))
-    print("Top five hosts:", top_five_results)
-    answer_json["hosts"] = top_five_results[0][0]
+    print("Top five hosts:", top_two_results)
+    answer_json["host"] = [top_two_results[0][0], top_two_results[1][0]]
+
+    lim = 0
+    # for award_category in awards_list_1315:
+    #     for tweet in presenter_data:
+    #         tweet_text = tweet["text"]
+
+    #         if award_type_check(tweet_text, award_category):
+    #             score = get_award(tweet_text, award_category)
+
+    #             if testscore[1] > 50:
+    #                 print(score[1], tweet["text"], result)
+    #                 result = get_actors(tweet_text)
+    #                 for entity in result:
+    #                     presenter_tally[entity] = presenter_tally.get(entity, 0) + 1
+
+    #         lim = lim + 1
+    #         if lim % 1000 == 0: print(award_category, lim)
+    #     c = Counter(presenter_tally)
+    #     top_five_results = c.most_common(5)
+    #     print("Dictionary after the increment of key : " + str(presenter_tally))
+    #     print("Top five presenters:", top_five_results)
+    #     if top_five_results != []:
+    #         answer_json[award_category]["presenters"] = top_five_results[0][0]
+    #     presenter_tally.clear()
+
 
     lim = 0
     counts = dict()
@@ -289,7 +323,7 @@ def main():
     #         "quentin tarantino"
     #      ])
     print("hey", len(people_awards))
-    for award_category in test_award:
+    for award_category in people_awards:
         for tweet in data:
             tweet_text = tweet["text"]
             # Process individual tweet.
@@ -313,6 +347,7 @@ def main():
 
             lim = lim + 1
             if lim % 1000 == 0: print(award_category, lim)
+            # if lim % 1000 == 0: break
         lim = 0
         print("Dictionary after the increment of key : " + str(counts))
         c = Counter(counts)
@@ -322,7 +357,10 @@ def main():
         counts.clear()
     with open('answers.json', 'w', encoding='utf-8') as f:
         json.dump(answer_json, f, ensure_ascii=False, indent=4)
-    f.close()
+
+    w.close()
+    h.close()
+    p.close()
 
 if __name__ == "__main__":
     """ This is executed when run from the command line """

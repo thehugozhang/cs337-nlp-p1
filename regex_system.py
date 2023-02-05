@@ -85,11 +85,26 @@ def get_award(text, category):
 # print(f'{winner} wins the Golden Globe for {award}')
 
 def award_type_check(text, award):
-    if award.lower().find("actress") != -1 and text.lower().find("actress") != -1:
-        return True
-    elif text.lower().find("actor") != -1 and award.lower().find("actor") != -1:
-        return True
-    elif award.lower().find("actress") == -1 and text.lower().find("actress") == -1 and text.lower().find("actor") == -1 and award.lower().find("actor") == -1:
-        return True
+    if (award.lower().find("musical") != -1 and text.lower().find("musical") != -1) or (award.lower().find("musical") == -1 and text.lower().find("musical") == -1):
+        if (award.lower().find("comedy") != -1 and text.lower().find("comedy") != -1) or (award.lower().find("comedy") == -1 and text.lower().find("comedy") == -1):
+            if (award.lower().find("drama") != -1 and text.lower().find("drama") != -1) or (award.lower().find("drama") == -1 and text.lower().find("drama") == -1):
+                if (award.lower().find("television") != -1 and (text.lower().find("televison") != -1 or text.find("TV") != -1)) or (award.lower().find("television") == -1 and (text.lower().find("televison") == -1 or text.find("TV") == -1)):
+                    if (award.lower().find("supporting") != -1 and text.lower().find("supporting") != -1) or (award.lower().find("supporting") == -1 and text.lower().find("supporting") == -1):
+                        if award.lower().find("actress") != -1 and text.lower().find("actress") != -1:
+                            return True
+                        elif text.lower().find("actor") != -1 and award.lower().find("actor") != -1:
+                            return True
+                        elif award.lower().find("actress") == -1 and text.lower().find("actress") == -1 and text.lower().find("actor") == -1 and award.lower().find("actor") == -1:
+                            return True
+                        else:
+                            return False
+                    else:
+                        return False
+                else:
+                    return False
+            else:
+                return False
+        else:
+            return False
     else:
         return False

@@ -1,5 +1,8 @@
 {
-    "host": "",
+    "host": [
+        "Tina Fey",
+        "Amy Poehler"
+    ],
     "cecil b. demille award": {
         "presenters": [],
         "nominees": [],
@@ -10,10 +13,15 @@
         "nominees": [],
         "winner": ""
     },
+    "best performance by an actor in a motion picture - drama": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "Daniel Day-Lewis"
+    },
     "best performance by an actress in a motion picture - drama": {
         "presenters": [],
         "nominees": [],
-        "winner": "Anne Hathaway"
+        "winner": "Jessica Chastain"
     },
     "best motion picture - comedy or musical": {
         "presenters": [],
@@ -23,12 +31,12 @@
     "best performance by an actress in a motion picture - comedy or musical": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Jennifer Lawrence"
     },
     "best performance by an actor in a motion picture - comedy or musical": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Hugh Jackman"
     },
     "best animated feature film": {
         "presenters": [],
@@ -43,17 +51,17 @@
     "best performance by an actress in a supporting role in a motion picture": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Anne Hathaway"
     },
     "best performance by an actor in a supporting role in a motion picture": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Christoph Waltz"
     },
     "best director - motion picture": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Ben Affleck"
     },
     "best screenplay - motion picture": {
         "presenters": [],
@@ -78,12 +86,12 @@
     "best performance by an actress in a television series - drama": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Claire Danes"
     },
     "best performance by an actor in a television series - drama": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Homeland"
     },
     "best television series - comedy or musical": {
         "presenters": [],
@@ -93,12 +101,12 @@
     "best performance by an actress in a television series - comedy or musical": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Lena Dunham"
     },
     "best performance by an actor in a television series - comedy or musical": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Don Cheadle"
     },
     "best mini-series or motion picture made for television": {
         "presenters": [],
@@ -108,22 +116,21 @@
     "best performance by an actress in a mini-series or motion picture made for television": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Julianne Moore"
     },
     "best performance by an actor in a mini-series or motion picture made for television": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Kevin Costner"
     },
     "best performance by an actress in a supporting role in a series, mini-series or motion picture made for television": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Maggie Smith"
     },
     "best performance by an actor in a supporting role in a series, mini-series or motion picture made for television": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
-    },
-    "hosts": "Amy Poehler"
+        "winner": "Ed Harris"
+    }
 }
