@@ -13,7 +13,7 @@ from fuzzywuzzy import process
 # Other imports.
 import json
 import requests
-
+import re
 
 nltk.download('averaged_perceptron_tagger')
 nltk.download('maxent_ne_chunker')
@@ -83,6 +83,13 @@ def get_media(text):
                                             }<VB.>+{"""
     entities = chunk_tagged_text(original_tweet, proper_entity_grammar, False)
 
+    # Match a quotation mark and if backslash exists, gobble it.
+    # Greedy inside quotes and then \1 match the same quote that was use for opening.
+    greedy_quotations = re.compile(r'(["\'])((?:\\.|[^\\])*?)(\1)').findall(text)
+
+    for quoted_entity in greedy_quotations:
+        entities.append(quoted_entity[1])
+    
     return entities
 
 # award_list
@@ -92,19 +99,18 @@ def get_award(text, category):
     return best_match
 
 def award_type_check(text, award):
-    if (award.lower().find("musical") != -1 and text.lower().find("musical") != -1) or (award.lower().find("musical") == -1 and text.lower().find("musical") == -1):
-        if (award.lower().find("comedy") != -1 and text.lower().find("comedy") != -1) or (award.lower().find("comedy") == -1 and text.lower().find("comedy") == -1):
-            if (award.lower().find("drama") != -1 and text.lower().find("drama") != -1) or (award.lower().find("drama") == -1 and text.lower().find("drama") == -1):
-                if (award.lower().find("television") != -1 and (text.lower().find("televison") != -1 or text.find("TV") != -1)) or (award.lower().find("television") == -1 and (text.lower().find("televison") == -1 or text.find("TV") == -1)):
-                    if (award.lower().find("supporting") != -1 and text.lower().find("supporting") != -1) or (award.lower().find("supporting") == -1 and text.lower().find("supporting") == -1):
-                        if award.lower().find("actress") != -1 and text.lower().find("actress") != -1:
-                            return True
-                        elif text.lower().find("actor") != -1 and award.lower().find("actor") != -1:
-                            return True
-                        elif award.lower().find("actress") == -1 and text.lower().find("actress") == -1 and text.lower().find("actor") == -1 and award.lower().find("actor") == -1:
-                            return True
+    if (award.lower().find("screenplay") != -1 and text.lower().find("screenplay") != -1) or (award.lower().find("screenplay") == -1 and text.lower().find("screenplay") == -1):
+        if (award.lower().find("song") != -1 and text.lower().find("song") != -1) or (award.lower().find("song") == -1 and text.lower().find("song") == -1):
+            if (award.lower().find("score") != -1 and text.lower().find("score") != -1) or (award.lower().find("score") == -1 and text.lower().find("score") == -1):
+                if (award.lower().find("musical") != -1 and text.lower().find("musical") != -1) or (award.lower().find("musical") == -1 and text.lower().find("musical") == -1):
+                    if (award.lower().find("comedy") != -1 and text.lower().find("comedy") != -1) or (award.lower().find("comedy") == -1 and text.lower().find("comedy") == -1):
+                        if (award.lower().find("drama") != -1 and text.lower().find("drama") != -1) or (award.lower().find("drama") == -1 and text.lower().find("drama") == -1):
+                            if (award.lower().find("television") != -1 and (text.lower().find("televison") != -1 or text.find("TV") != -1)) or (award.lower().find("television") == -1 and (text.lower().find("televison") == -1 or text.find("TV") == -1)):
+                                if (award.lower().find("supporting") != -1 and text.lower().find("supporting") != -1) or (award.lower().find("supporting") == -1 and text.lower().find("supporting") == -1):
+                                    if award.lower().find("actress") != -1 and text.lower().find("actress") != -1:
+                                        return True
+                                    elif text.lower().find("actor") != -1 and award.lower().find("actor") != -1:
+                                        return True
+                                    elif award.lower().find("actress") == -1 and text.lower().find("actress") == -1 and text.lower().find("actor") == -1 and award.lower().find("actor") == -1:
+                                        return True
     return False
-
-example = "I love The Big Bang Theory deserves to win the global golden!"
-print(example)
-print(get_media(example))

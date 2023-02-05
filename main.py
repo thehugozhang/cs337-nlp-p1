@@ -326,7 +326,7 @@ def main():
     #         "quentin tarantino"
     #      ])
     print("hey", len(people_awards))
-    for award_category in other_awards:
+    for award_category in awards_list_1315:
         for tweet in data:
             tweet_text = tweet["text"]
             # Process individual tweet.
@@ -349,17 +349,18 @@ def main():
                     for entity in result:
                         counts[entity] = counts.get(entity, 0) + 1
 
-                    print(score[1], tweet["text"], result)
+                    # print(score[1], tweet["text"], result)
 
             lim = lim + 1
             if lim % 1000 == 0: print(award_category, lim)
             # if lim % 1000 == 0: break
         lim = 0
-        print("Dictionary after the increment of key : " + str(counts))
+        # print("Dictionary after the increment of key : " + str(counts))
         c = Counter(counts)
         top_three_results = c.most_common(3)
         print(award_category, top_three_results)
-        answer_json[award_category]["winner"] = top_three_results[0][0]
+        if top_three_results != []:
+            answer_json[award_category]["winner"] = top_three_results[0][0]
         counts.clear()
     with open('answers.json', 'w', encoding='utf-8') as f:
         json.dump(answer_json, f, ensure_ascii=False, indent=4)
