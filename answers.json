@@ -11,126 +11,141 @@
     "best motion picture - drama": {
         "presenters": "Julia Roberts",
         "nominees": [],
-        "winner": ""
+        "winner": "Argo"
     },
     "best performance by an actor in a motion picture - drama": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Daniel Day-Lewis"
     },
     "best performance by an actress in a motion picture - drama": {
         "presenters": "Lea Michele",
-        "nominees": [],
-        "winner": ""
+        "nominees": [
+            "Lea Michele"
+        ],
+        "winner": "Jessica Chastain"
     },
     "best motion picture - comedy or musical": {
         "presenters": "Jay Leno",
         "nominees": [],
-        "winner": ""
+        "winner": "Les Miserables"
     },
     "best performance by an actress in a motion picture - comedy or musical": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Jennifer Lawrence"
     },
     "best performance by an actor in a motion picture - comedy or musical": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Hugh Jackman"
     },
     "best animated feature film": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Brave"
     },
     "best foreign language film": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Amour"
     },
     "best performance by an actress in a supporting role in a motion picture": {
         "presenters": "Dennis Quaid",
-        "nominees": [],
-        "winner": ""
+        "nominees": [
+            "Mary Todd Lincoln",
+            "Anne Hathaway",
+            "Les Miserables"
+        ],
+        "winner": "Anne Hathaway"
     },
     "best performance by an actor in a supporting role in a motion picture": {
         "presenters": "Bradley Cooper",
-        "nominees": [],
-        "winner": ""
+        "nominees": [
+            "Bradley Cooper",
+            "Kate Hudson"
+        ],
+        "winner": "Christoph Waltz"
     },
     "best director - motion picture": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Ben Affleck"
     },
     "best screenplay - motion picture": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Django"
     },
     "best original score - motion picture": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Life of Pi"
     },
     "best original song - motion picture": {
         "presenters": "J. Lo",
         "nominees": [],
-        "winner": ""
+        "winner": "Skyfall"
     },
     "best television series - drama": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Homeland"
     },
     "best performance by an actress in a television series - drama": {
         "presenters": "Lea Michele",
-        "nominees": [],
-        "winner": ""
+        "nominees": [
+            "Lea Michele"
+        ],
+        "winner": "Claire Danes"
     },
     "best performance by an actor in a television series - drama": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Homeland"
     },
     "best television series - comedy or musical": {
         "presenters": "Jay Leno",
         "nominees": [],
-        "winner": ""
+        "winner": "Girls"
     },
     "best performance by an actress in a television series - comedy or musical": {
         "presenters": [],
-        "nominees": [],
-        "winner": ""
+        "nominees": [
+            "Lena Dunham"
+        ],
+        "winner": "Lena Dunham"
     },
     "best performance by an actor in a television series - comedy or musical": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Don Cheadle"
     },
     "best mini-series or motion picture made for television": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Game Change"
     },
     "best performance by an actress in a mini-series or motion picture made for television": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Julianne Moore"
     },
     "best performance by an actor in a mini-series or motion picture made for television": {
         "presenters": [],
-        "nominees": [],
-        "winner": ""
+        "nominees": [
+            "Si Robertson"
+        ],
+        "winner": "Kevin Costner"
     },
     "best performance by an actress in a supporting role in a series, mini-series or motion picture made for television": {
         "presenters": "Maggie Smith",
         "nominees": [],
-        "winner": ""
+        "winner": "Maggie Smith"
     },
     "best performance by an actor in a supporting role in a series, mini-series or motion picture made for television": {
         "presenters": [],
         "nominees": [],
-        "winner": ""
+        "winner": "Ed Harris"
     }
 }

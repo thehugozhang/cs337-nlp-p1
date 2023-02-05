@@ -180,7 +180,7 @@ other_awards = [
 
 people_awards = [    "best performance by an actress in a motion picture - drama",    "best performance by an actor in a motion picture - drama",    "best performance by an actress in a motion picture - comedy or musical",    "best performance by an actor in a motion picture - comedy or musical",    "best performance by an actress in a supporting role in a motion picture",    "best performance by an actor in a supporting role in a motion picture",    "best director - motion picture",    "best performance by an actress in a television series - drama",    "best performance by an actor in a television series - drama",    "best performance by an actress in a television series - comedy or musical",    "best performance by an actor in a television series - comedy or musical",    "best performance by an actress in a mini-series or motion picture made for television",    "best performance by an actor in a mini-series or motion picture made for television",    "best performance by an actress in a supporting role in a series, mini-series or motion picture made for television",    "best performance by an actor in a supporting role in a series, mini-series or motion picture made for television"]
 
-test_award = ["best television series - comedy or musical"]
+test_award = ["best performance by an actress in a motion picture - drama"]
 
 
 
@@ -274,6 +274,7 @@ def main():
 
     n = open('gg2013-nominee.json')
     nominee_data = json.load(n)
+    nominee_tally = dict()
 
     lim = 0
     for tweet in host_data:
@@ -318,15 +319,6 @@ def main():
     lim = 0
     counts = dict()
 
-    chunked_category = chunk_tagged_text(pos_tag_text('best director - motion picture'), "Award Category: {<RBS|JJS><NN>*}", False)
-    print(chunked_category[0])
-
-    process_tweet(tweet_ex_1["text"], category=chunked_category[0], nominees=[
-            "kathryn bigelow",
-            "ang lee",
-            "steven spielberg",
-            "quentin tarantino"
-         ])
     print("hey", len(people_awards))
     for award_category in awards_list_1315:
         for tweet in data:
@@ -356,6 +348,37 @@ def main():
         if top_three_results != []:
             answer_json[award_category]["winner"] = top_three_results[0][0]
         counts.clear()
+
+
+    for award_category in awards_list_1315:
+        for tweet in nominee_data:
+            tweet_text = tweet["text"]
+
+            if award_type_check(tweet_text, award_category):
+                score = get_award(tweet_text, award_category)
+
+                if score[1] > 50:
+                    if getAwardType(award_category) == "Person":
+                        result = get_actors(tweet_text)
+                    else:
+                        result = get_media(tweet_text)
+                    for entity in result:
+                        nominee_tally[entity] = nominee_tally.get(entity, 0) + 1
+
+            lim = lim + 1
+            if lim % 1000 == 0: print(award_category, lim)
+        c = Counter(nominee_tally)
+        top_five_results = c.most_common(5)
+        print("Dictionary after the increment of key : " + str(nominee_tally))
+        print("Top five presenters:", top_five_results)
+        nominees = []
+        if top_five_results != []:
+            for nominee in top_five_results:
+                nominees.append(nominee[0])
+        answer_json[award_category]["nominees"] = nominees
+        nominee_tally.clear()
+
+    # Write answers to file.
     with open('answers.json', 'w', encoding='utf-8') as f:
         json.dump(answer_json, f, ensure_ascii=False, indent=4)
 
