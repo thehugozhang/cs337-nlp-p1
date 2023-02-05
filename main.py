@@ -13,11 +13,40 @@ nltk.download("averaged_perceptron_tagger")
 # NLTK Library Imports.
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
+# Fuzzywuzzy Imports.
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 # Other imports.
 import json
+from collections import Counter
+
+from regex_system import get_actors, get_award, award_type_check
 
 stop_words = set(stopwords.words("english"))
 tweet_ex_1 = {"text": "WINNER: Ben Affleck wins best film director for “Argo” #GOLDENGLOBES", "user": {"screen_name": "variety", "id": 1234567890}, "id": 1234567890, "timestamp_ms": 1234567890}
+
+awards_list_1315 = ['cecil b. demille award', 'best motion picture - drama', 'best performance by an actress in a motion picture - drama', 'best performance by an actor in a motion picture - drama', 'best motion picture - comedy or musical', 'best performance by an actress in a motion picture - comedy or musical', 'best performance by an actor in a motion picture - comedy or musical', 'best animated feature film', 'best foreign language film', 'best performance by an actress in a supporting role in a motion picture', 'best performance by an actor in a supporting role in a motion picture', 'best director - motion picture', 'best screenplay - motion picture', 'best original score - motion picture', 'best original song - motion picture', 'best television series - drama', 'best performance by an actress in a television series - drama', 'best performance by an actor in a television series - drama', 'best television series - comedy or musical', 'best performance by an actress in a television series - comedy or musical', 'best performance by an actor in a television series - comedy or musical', 'best mini-series or motion picture made for television', 'best performance by an actress in a mini-series or motion picture made for television', 'best performance by an actor in a mini-series or motion picture made for television', 'best performance by an actress in a supporting role in a series, mini-series or motion picture made for television', 'best performance by an actor in a supporting role in a series, mini-series or motion picture made for television']
+
+
+# cecil b. demille award
+
+# best motion picture - drama
+# best motion picture - comedy or musical
+# best animated feature film
+# best foreign language film
+# best screenplay - motion picture
+# best original score - motion picture
+# best original song - motion picture
+# best television series - drama
+# best television series - comedy or musical
+# best mini-series or motion picture made for television
+
+people_awards = [    "best performance by an actress in a motion picture - drama",    "best performance by an actor in a motion picture - drama",    "best performance by an actress in a motion picture - comedy or musical",    "best performance by an actor in a motion picture - comedy or musical",    "best performance by an actress in a supporting role in a motion picture",    "best performance by an actor in a supporting role in a motion picture",    "best director - motion picture",    "best performance by an actress in a television series - drama",    "best performance by an actor in a television series - drama",    "best performance by an actress in a television series - comedy or musical",    "best performance by an actor in a television series - comedy or musical",    "best performance by an actress in a mini-series or motion picture made for television",    "best performance by an actor in a mini-series or motion picture made for television",    "best performance by an actress in a supporting role in a series, mini-series or motion picture made for television",    "best performance by an actor in a supporting role in a series, mini-series or motion picture made for television"]
+
+
+
+
+
 
 # HELPER FUNCTIONS
 def pos_tag_text(text, lowercase=True, filter_stop_words=False):
@@ -64,22 +93,28 @@ def process_tweet(tweet, **kwargs):
     # Grammar rule: optional determiner (DD), superlative adverb/adjective (best), any number of adjectives (JJ), noun (actor)
     # Ex. the (DD) Best (RBS) Supporting (JJ) Actress (NN)
     category_grammar = "Award Category: {<RBS|JJS><NN>*}"
-    category_chunks = chunk_tagged_text(lowercase_original_tweet, category_grammar, True)
+    category_chunks = chunk_tagged_text(lowercase_original_tweet, category_grammar, False)
 
     # Entity Name chunking RegEx.
     # Grammar rule: any number of proper singular noun followed by a verb (wins), following removing verbs.
     # Ex. Taron (NNP) Egerton (NNP) wins (VBZ).
     proper_entity_grammar = """Entity Name: {<NNP>*<VB.>}
                                             }<VB.>+{"""
-    entities = chunk_tagged_text(original_tweet, proper_entity_grammar, True)
+    entities = chunk_tagged_text(original_tweet, proper_entity_grammar, False)
 
     # category_chunks = ["best director"]
     # if category in category_chunks:
-    if category in category_chunks and len(entities):
-        print(category_chunks, entities)
+    # if category in category_chunks and len(entities):
+    # if len(category_chunks) and len(entities):
+        # print(category_chunks, entities)
 
     # naive tallying:
-    if category in category_chunks:
+    best_match = process.extractOne(tweet, [category], scorer=fuzz.token_sort_ratio)
+
+    # if category in category_chunks:
+
+    if best_match[1] > 50:
+        print(tweet, best_match, entities)
         return entities
     else:
         return []
@@ -88,41 +123,51 @@ def main():
     """ Main entry point of the app """
 
 
-    f = open('gg2013.json')
+    f = open('gg2013-parsed.json')
     data = json.load(f)
 
     lim = 0
     counts = dict()
 
-    chunked_category = chunk_tagged_text(pos_tag_text('best director - motion picture'), "Award Category: {<RBS|JJS><NN>*}", True)
-    print(chunked_category[0])
+    # chunked_category = chunk_tagged_text(pos_tag_text('best director - motion picture'), "Award Category: {<RBS|JJS><NN>*}", False)
+    # print(chunked_category[0])
 
-    process_tweet(tweet_ex_1["text"], category=chunked_category[0], nominees=[
-            "kathryn bigelow",
-            "ang lee",
-            "steven spielberg",
-            "quentin tarantino"
-         ])
+    # process_tweet(tweet_ex_1["text"], category=chunked_category[0], nominees=[
+    #         "kathryn bigelow",
+    #         "ang lee",
+    #         "steven spielberg",
+    #         "quentin tarantino"
+    #      ])
+    print("hey", len(people_awards))
+    for award_category in people_awards:
+        for tweet in data:
+            tweet_text = tweet["text"]
+            # Process individual tweet.
+            # result = process_tweet(tweet["text"], category='best director - motion picture', nominees=[
+            #     "kathryn bigelow",
+            #     "ang lee",
+            #     "steven spielberg",
+            #     "quentin tarantino"
+            # ])
+            # temp_category = "best performance by an actor in a motion picture - comedy or musical"
 
-    for tweet in data:
+            if award_type_check(tweet_text, award_category):
+                score = get_award(tweet_text, award_category)
 
-        # Process individual tweet.
-        result = process_tweet(tweet["text"], category=chunked_category[0], nominees=[
-            "kathryn bigelow",
-            "ang lee",
-            "steven spielberg",
-            "quentin tarantino"
-         ])
+                if score[1] > 50:
+                    result = get_actors(tweet_text)
+                    # print(score[1], tweet["text"], result)
+                    for entity in result:
+                        counts[entity] = counts.get(entity, 0) + 1
 
-        for entity in result:
-            counts[entity] = counts.get(entity, 0) + 1
 
-        lim = lim + 1
-        if lim % 1000 == 0: print(lim)
-        if lim == 100000: break
-
-    print("Dictionary after the increment of key : " + str(counts))
-
+            lim = lim + 1
+            if lim % 1000 == 0: print(award_category, lim)
+        lim = 0
+        # print("Dictionary after the increment of key : " + str(counts))
+        c = Counter(counts)
+        print(award_category, c.most_common(3))
+        counts.clear()
     f.close()
 
 if __name__ == "__main__":
