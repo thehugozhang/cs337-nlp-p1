@@ -73,16 +73,23 @@ def get_actors(text):
             names.append(entity['entity'])
     return names
 
+def get_media(text):
+    original_tweet = pos_tag_text(text, False, False)
+
+    # Entity Name chunking RegEx.
+    # Grammar rule: any number of proper singular noun followed by a verb (wins), following removing verbs.
+    # Ex. Taron (NNP) Egerton (NNP) wins (VBZ).
+    proper_entity_grammar = """Entity Name: {<DT>?<NNP>*<VB.>}
+                                            }<VB.>+{"""
+    entities = chunk_tagged_text(original_tweet, proper_entity_grammar, False)
+
+    return entities
+
 # award_list
 def get_award(text, category):
     best_match = process.extractOne(text, [category], scorer=fuzz.token_sort_ratio)
     # print(best_match)
     return best_match
-
-# winner = get_actors(tweet4)[0]
-# award = get_award(tweet4, "best performance by an actor in a supporting role in a motion picture")
-
-# print(f'{winner} wins the Golden Globe for {award}')
 
 def award_type_check(text, award):
     if (award.lower().find("musical") != -1 and text.lower().find("musical") != -1) or (award.lower().find("musical") == -1 and text.lower().find("musical") == -1):
@@ -96,15 +103,8 @@ def award_type_check(text, award):
                             return True
                         elif award.lower().find("actress") == -1 and text.lower().find("actress") == -1 and text.lower().find("actor") == -1 and award.lower().find("actor") == -1:
                             return True
-                        else:
-                            return False
-                    else:
-                        return False
-                else:
-                    return False
-            else:
-                return False
-        else:
-            return False
-    else:
-        return False
+    return False
+
+example = "I love The Big Bang Theory deserves to win the global golden!"
+print(example)
+print(get_media(example))

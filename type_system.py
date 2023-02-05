@@ -50,26 +50,26 @@ import framework_system
 
 
 def isMovie(movie):
-    if framework.movies.count(movie) > 0:
+    if framework_system.movies.count(movie) > 0:
         return True
     return False
 
 def isPerson(person):
-    if framework.people.count(person) > 0:
+    if framework_system.people.count(person) > 0:
         return True
     return False
 
 def isShow(show):
-    if framework.shows.count(show) > 0:
+    if framework_system.shows.count(show) > 0:
         return True
     return False
 
 def getAwardType(award):
-    return framework.awards[award]["Nominee Type"]
+    return framework_system.awards[award]["Nominee Type"]
 
 def isNominee(entity,award):
     if isAwardType(entity,award) == True:
-        if framework.awards[award]["Nominees"].count(entity) == 1:
+        if framework_system.awards[award]["Nominees"].count(entity) == 1:
             return True
     return False
 

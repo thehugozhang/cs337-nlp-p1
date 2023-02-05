@@ -20,7 +20,8 @@ from fuzzywuzzy import process
 import json
 from collections import Counter
 import re
-from regex_system import get_actors, get_award, award_type_check
+from regex_system import get_actors, get_media, get_award, award_type_check
+from type_system import getAwardType, isMovie, isShow
 
 stop_words = set(stopwords.words("english"))
 tweet_ex_1 = {"text": "WINNER: Ben Affleck wins best film director for “Argo” #GOLDENGLOBES", "user": {"screen_name": "variety", "id": 1234567890}, "id": 1234567890, "timestamp_ms": 1234567890}
@@ -164,20 +165,22 @@ answer_json = {
 
 # cecil b. demille award
 
-# best motion picture - drama
-# best motion picture - comedy or musical
-# best animated feature film
-# best foreign language film
-# best screenplay - motion picture
-# best original score - motion picture
-# best original song - motion picture
-# best television series - drama
-# best television series - comedy or musical
-# best mini-series or motion picture made for television
+other_awards = [
+    "best motion picture - drama",
+    "best motion picture - comedy or musical",
+    "best animated feature film",
+    "best foreign language film",
+    "best screenplay - motion picture",
+    "best original score - motion picture",
+    "best original song - motion picture",
+    "best television series - drama",
+    "best television series - comedy or musical",
+    "best mini-series or motion picture made for television",
+]
 
 people_awards = [    "best performance by an actress in a motion picture - drama",    "best performance by an actor in a motion picture - drama",    "best performance by an actress in a motion picture - comedy or musical",    "best performance by an actor in a motion picture - comedy or musical",    "best performance by an actress in a supporting role in a motion picture",    "best performance by an actor in a supporting role in a motion picture",    "best director - motion picture",    "best performance by an actress in a television series - drama",    "best performance by an actor in a television series - drama",    "best performance by an actress in a television series - comedy or musical",    "best performance by an actor in a television series - comedy or musical",    "best performance by an actress in a mini-series or motion picture made for television",    "best performance by an actor in a mini-series or motion picture made for television",    "best performance by an actress in a supporting role in a series, mini-series or motion picture made for television",    "best performance by an actor in a supporting role in a series, mini-series or motion picture made for television"]
 
-test_award = ["best performance by an actor in a motion picture - drama"]
+test_award = ["best television series - comedy or musical"]
 
 
 
@@ -323,7 +326,7 @@ def main():
     #         "quentin tarantino"
     #      ])
     print("hey", len(people_awards))
-    for award_category in people_awards:
+    for award_category in other_awards:
         for tweet in data:
             tweet_text = tweet["text"]
             # Process individual tweet.
@@ -339,11 +342,14 @@ def main():
                 score = get_award(tweet_text, award_category)
 
                 if score[1] > 50:
-                    result = get_actors(tweet_text)
-                    # print(score[1], tweet["text"], result)
+                    if getAwardType(award_category) == "Person":
+                        result = get_actors(tweet_text)
+                    else:
+                        result = get_media(tweet_text)
                     for entity in result:
                         counts[entity] = counts.get(entity, 0) + 1
 
+                    print(score[1], tweet["text"], result)
 
             lim = lim + 1
             if lim % 1000 == 0: print(award_category, lim)
