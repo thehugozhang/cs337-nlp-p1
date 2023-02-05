@@ -1,52 +1,20 @@
-# Python 3.11.1
-"""
-CS337 Intro NLP Project 1
-Group 10: Hugo Zhang, Aliyah Tenner, Peter Sheldon
 """
 
-# NLTK Configuration.
-import nltk
-# NLTK Downloads.
-nltk.download("punkt")
-nltk.download("stopwords")
-nltk.download("averaged_perceptron_tagger")
-# NLTK Library Imports.
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-# Fuzzywuzzy Imports.
-from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
+Binning system for pre-ceremony setup.
+
+"""
+
+__version__ = '1.0'
+__author__ = 'Hugo Zhang'
+
+# System imports.
+from helpers_system import pos_tag_text, chunk_tagged_text
+
 # Other imports.
 import json
 import re
 
-# HELPER FUNCTIONS
-def pos_tag_text(text, lowercase=True, filter_stop_words=False):
-    if (lowercase): text = text.lower()
-
-    words = word_tokenize(text)
-
-    if filter_stop_words: words = [word for word in words if word.casefold() not in stop_words]
-
-    words = nltk.pos_tag(words)
-
-    return words
-
-def chunk_tagged_text(text_list, chunk_rule, draw_tree=False):
-    chunk_parser = nltk.RegexpParser(chunk_rule)
-    tree = chunk_parser.parse(text_list)
-    if draw_tree: tree.draw()
-
-    results = []
-    for subtree in tree.subtrees(filter=lambda t: t.label() == chunk_rule.split(':')[0]):
-        extracted_text = []
-        for pos_tuple in subtree[0:]:
-            extracted_text.append(pos_tuple[0])
-        results.append(" ".join(extracted_text))
-    
-    return results
-
-# Process individual tweet.
+# Process individual tweets.
 def bin_tweet(tweet):
     bins = [None, None, None, None, None, None]
 
@@ -57,7 +25,7 @@ def bin_tweet(tweet):
     if tweet.find("RT") != -1:
         return bins
 
-    # original_tweet = pos_tag_text(tweet, False, False)
+    # Tag parts of speech.
     lowercase_original_tweet = pos_tag_text(tweet, True, False)
 
     # Award Category chunking RegEx.
@@ -66,27 +34,26 @@ def bin_tweet(tweet):
     category_grammar = "Award Category: {<RBS|JJS>}"
     category_chunks = chunk_tagged_text(lowercase_original_tweet, category_grammar, False)
 
+    # Bin any tweets with superlatives ("best", "biggest", "most") into our winner dataset.
     if len(category_chunks):
         bins[1] = full_tweet
 
+    # Bin any tweets with some form of "host" into our host dataset.
     host_regex = re.compile(r'[Hh]ost')
     if host_regex.search(tweet):
         bins[2] = full_tweet
 
+    # Bin any tweets with some form of "present" into our presenter dataset.
     presenter_regex = re.compile(r'[Pp]resent')
     if presenter_regex.search(tweet):
         bins[3] = full_tweet
 
+    # Bin any tweets with some form of "nomin" into our nominee dataset.
     nominee_regex = re.compile(r'[Nn]omin')
     if nominee_regex.search(tweet):
         bins[4] = full_tweet
 
-    dustier = re.compile(r'[Cc]looney')
-    if dustier.search(tweet):
-        bins[5] = full_tweet
-    
     return bins
-        
     
 def main():
     """ Main entry point of the app """
@@ -95,9 +62,6 @@ def main():
     parsed_host_data = []
     parsed_presenter_data = []
     parsed_nominee_data = []
-
-
-    parsed_extra_info = []
 
     f = open('gg2013.json')
     data = json.load(f)
@@ -118,12 +82,11 @@ def main():
             parsed_presenter_data.append(bins[3])
         if bins[4] is not None:
             parsed_nominee_data.append(bins[4])
-        if bins[5] is not None:
-            parsed_extra_info.append(bins[5])
 
         lim = lim + 1
         if lim % 1000 == 0: print(lim)
 
+    # Write to JSON files.
     with open('gg2013-winner.json', 'w', encoding='utf-8') as f:
         json.dump(parsed_winner_data, f, ensure_ascii=False)
     with open('gg2013-host.json', 'w', encoding='utf-8') as f:
@@ -132,8 +95,6 @@ def main():
         json.dump(parsed_presenter_data, f, ensure_ascii=False)
     with open('gg2013-nominee.json', 'w', encoding='utf-8') as f:
         json.dump(parsed_nominee_data, f, ensure_ascii=False)
-    with open('gg2013-dustin.json', 'w', encoding='utf-8') as f:
-        json.dump(parsed_extra_info, f, ensure_ascii=False)
 
     f.close()
 

@@ -1,10 +1,19 @@
-# Add type check / type system below...
+"""
+
+Type check system that utilizes Framework system.
+
+"""
+
+__version__ = '1.0'
+__author__ = 'Aliyah Tenner'
+
+# System imports.
+import framework_system
+
 # import requests
 # from bs4 import BeautifulSoup
 # import re
 # import pandas as pd
-import framework_system
-
 
 # # Downloading imdb top 250 movie's data
 # url = 'https://www.imdb.com/event/ev0000292/2013/1'
@@ -48,7 +57,6 @@ import framework_system
 
 # print(award_data[3])
 
-
 def isMovie(movie):
     if framework_system.movies.count(movie) > 0:
         return True
@@ -88,8 +96,3 @@ def isAwardType(entity,award):
         if isShow(entity) == True:
             return True
         return False
-
-
-    
-
-

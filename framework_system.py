@@ -1,3 +1,12 @@
+"""
+
+Framework system pulled through IMDB API and stored for direct access.
+
+"""
+
+__version__ = '1.0'
+__author__ = 'Aliyah Tenner'
+
 awards = {
    "best motion picture - drama": {"Nominee Type": "Movie", "Nominees":["Argo", "Django Unchained","Life of Pi","Lincoln","Zero Dark Thirty"],"Winner":"Argo"},
    "best motion picture - comedy or musical" :{"Nominee Type": "Movie","Nominees":["Les Miserables", "Moonrise Kingdom","Salmon Fishing in the Yemen","Silver Linings Playbook","The Best Exotic Marigold Hotel"],"Winner":"Les Miserables"},
