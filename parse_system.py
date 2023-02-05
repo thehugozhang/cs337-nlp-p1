@@ -48,7 +48,7 @@ def chunk_tagged_text(text_list, chunk_rule, draw_tree=False):
 
 # Process individual tweet.
 def bin_tweet(tweet):
-    bins = [None, None, None, None, None]
+    bins = [None, None, None, None, None, None]
 
     full_tweet = tweet
     tweet = tweet["text"]
@@ -80,6 +80,10 @@ def bin_tweet(tweet):
     nominee_regex = re.compile(r'[Nn]omin')
     if nominee_regex.search(tweet):
         bins[4] = full_tweet
+
+    dustier = re.compile(r'[Cc]looney')
+    if dustier.search(tweet):
+        bins[5] = full_tweet
     
     return bins
         
@@ -91,6 +95,9 @@ def main():
     parsed_host_data = []
     parsed_presenter_data = []
     parsed_nominee_data = []
+
+
+    parsed_extra_info = []
 
     f = open('gg2013.json')
     data = json.load(f)
@@ -111,7 +118,9 @@ def main():
             parsed_presenter_data.append(bins[3])
         if bins[4] is not None:
             parsed_nominee_data.append(bins[4])
-        
+        if bins[5] is not None:
+            parsed_extra_info.append(bins[5])
+
         lim = lim + 1
         if lim % 1000 == 0: print(lim)
 
@@ -123,6 +132,8 @@ def main():
         json.dump(parsed_presenter_data, f, ensure_ascii=False)
     with open('gg2013-nominee.json', 'w', encoding='utf-8') as f:
         json.dump(parsed_nominee_data, f, ensure_ascii=False)
+    with open('gg2013-dustin.json', 'w', encoding='utf-8') as f:
+        json.dump(parsed_extra_info, f, ensure_ascii=False)
 
     f.close()
 

@@ -20,7 +20,7 @@ from fuzzywuzzy import process
 import json
 from collections import Counter
 import re
-from regex_system import get_actors, get_media, get_award, award_type_check
+from regex_system import get_actors, get_media, get_award, award_type_check, expand_hashtags
 from type_system import getAwardType, isMovie, isShow
 
 stop_words = set(stopwords.words("english"))
@@ -272,6 +272,9 @@ def main():
     presenter_data = json.load(p)
     presenter_tally = dict()
 
+    n = open('gg2013-nominee.json')
+    nominee_data = json.load(n)
+
     lim = 0
     for tweet in host_data:
         tweet_text = tweet["text"]
@@ -279,8 +282,7 @@ def main():
         for entity in result:
             host_tally[entity] = host_tally.get(entity, 0) + 1
         lim = lim + 1
-        if lim % 10 == 0: print(lim)
-        if lim == 1: break
+        if lim == 10: break
     
     c = Counter(host_tally)
     top_two_results = c.most_common(2)
@@ -289,54 +291,46 @@ def main():
     answer_json["host"] = [top_two_results[0][0], top_two_results[1][0]]
 
     lim = 0
-    # for award_category in awards_list_1315:
-    #     for tweet in presenter_data:
-    #         tweet_text = tweet["text"]
+    for award_category in awards_list_1315:
+        for tweet in presenter_data:
+            tweet_text = tweet["text"]
 
-    #         if award_type_check(tweet_text, award_category):
-    #             score = get_award(tweet_text, award_category)
+            if award_type_check(tweet_text, award_category):
+                score = get_award(tweet_text, award_category)
 
-    #             if testscore[1] > 50:
-    #                 print(score[1], tweet["text"], result)
-    #                 result = get_actors(tweet_text)
-    #                 for entity in result:
-    #                     presenter_tally[entity] = presenter_tally.get(entity, 0) + 1
+                if score[1] > 50:
+                    print(score[1], tweet["text"], result)
+                    result = get_actors(tweet_text)
+                    for entity in result:
+                        presenter_tally[entity] = presenter_tally.get(entity, 0) + 1
 
-    #         lim = lim + 1
-    #         if lim % 1000 == 0: print(award_category, lim)
-    #     c = Counter(presenter_tally)
-    #     top_five_results = c.most_common(5)
-    #     print("Dictionary after the increment of key : " + str(presenter_tally))
-    #     print("Top five presenters:", top_five_results)
-    #     if top_five_results != []:
-    #         answer_json[award_category]["presenters"] = top_five_results[0][0]
-    #     presenter_tally.clear()
+            lim = lim + 1
+            if lim % 1000 == 0: print(award_category, lim)
+        c = Counter(presenter_tally)
+        top_five_results = c.most_common(5)
+        print("Dictionary after the increment of key : " + str(presenter_tally))
+        print("Top five presenters:", top_five_results)
+        if top_five_results != []:
+            answer_json[award_category]["presenters"] = top_five_results[0][0]
+        presenter_tally.clear()
 
 
     lim = 0
     counts = dict()
 
-    # chunked_category = chunk_tagged_text(pos_tag_text('best director - motion picture'), "Award Category: {<RBS|JJS><NN>*}", False)
-    # print(chunked_category[0])
+    chunked_category = chunk_tagged_text(pos_tag_text('best director - motion picture'), "Award Category: {<RBS|JJS><NN>*}", False)
+    print(chunked_category[0])
 
-    # process_tweet(tweet_ex_1["text"], category=chunked_category[0], nominees=[
-    #         "kathryn bigelow",
-    #         "ang lee",
-    #         "steven spielberg",
-    #         "quentin tarantino"
-    #      ])
+    process_tweet(tweet_ex_1["text"], category=chunked_category[0], nominees=[
+            "kathryn bigelow",
+            "ang lee",
+            "steven spielberg",
+            "quentin tarantino"
+         ])
     print("hey", len(people_awards))
     for award_category in awards_list_1315:
         for tweet in data:
             tweet_text = tweet["text"]
-            # Process individual tweet.
-            # result = process_tweet(tweet["text"], category='best director - motion picture', nominees=[
-            #     "kathryn bigelow",
-            #     "ang lee",
-            #     "steven spielberg",
-            #     "quentin tarantino"
-            # ])
-            # temp_category = "best performance by an actor in a motion picture - comedy or musical"
 
             if award_type_check(tweet_text, award_category):
                 score = get_award(tweet_text, award_category)
@@ -364,6 +358,8 @@ def main():
         counts.clear()
     with open('answers.json', 'w', encoding='utf-8') as f:
         json.dump(answer_json, f, ensure_ascii=False, indent=4)
+
+    # print(answer_json)
 
     w.close()
     h.close()

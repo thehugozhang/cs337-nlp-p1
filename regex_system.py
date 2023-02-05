@@ -52,6 +52,19 @@ def chunk_tagged_text(text_list, chunk_rule, draw_tree=False):
     
     return results
 
+def expand_hashtags(text):
+    # Regex to get every hashtag.
+    hashtags = re.findall(r"#(\w+)", text)
+    expanded = re.sub("#[A-Za-z0-9_]+","", text)
+
+    parsed_text = []
+
+    # Add a space before every uppercase character and trim off the leading and trailing spaces
+    for hashtag in hashtags:
+        expanded = expanded + " " + re.sub(r"(\w)([A-Z])", r"\1 \2", hashtag)
+
+    return expanded
+
 def get_actors(text):
     url = "https://text-analysis12.p.rapidapi.com/ner/api/v1.1"
 
@@ -114,3 +127,5 @@ def award_type_check(text, award):
                                     elif award.lower().find("actress") == -1 and text.lower().find("actress") == -1 and text.lower().find("actor") == -1 and award.lower().find("actor") == -1:
                                         return True
     return False
+
+print(expand_hashtags("Testing #JuliaRoberts #GeorgeClooney"))
