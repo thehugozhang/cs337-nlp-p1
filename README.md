@@ -52,7 +52,7 @@ pip3 install --user -U numpy
 * To execute the system outside the associated [autograder](https://github.com/milara/gg-project-master/blob/master/autograder.py):
 
 ```
-python3 main.py
+python3 main_system.py
 ```
 
 * *This system takes roughly ~8-10 minutes (or an average of ~500 seconds) to run in its entirety. It will both pretty-print its results in a human-readable format to the console and write its results to answers.json on completion.*
