@@ -59,7 +59,7 @@ python3 main_system.py
 
 * To run the autograder:
 ```
-python3 autograder.py
+python3 autograder.py -2013
 ```
 
 ## Help
