@@ -3,11 +3,6 @@
         "Amy Poehler",
         "Tina Fey"
     ],
-    "cecil b. demille award": {
-        "presenters": [],
-        "nominees": [],
-        "winner": ""
-    },
     "best motion picture - drama": {
         "presenters": "Julia Roberts",
         "nominees": [],
@@ -147,5 +142,38 @@
         "presenters": [],
         "nominees": [],
         "winner": "Ed Harris"
-    }
+    },
+    "cecil b. demille award": {
+        "presenters": [],
+        "nominees": [],
+        "winner": ""
+    },
+    "awards": [
+        "best director",
+        "best original song",
+        "best actor",
+        "best picture",
+        "best motion picture - drama",
+        "best screenplay",
+        "best actress",
+        "best motion picture - musical - comedy",
+        "best drama",
+        "best golden globes",
+        "best original score",
+        "best foreign film",
+        "best part",
+        "best actor - drama",
+        "best motion picture",
+        "best song",
+        "best original song - motion picture",
+        "best actor in a motion - motion picture - drama",
+        "best tv series - drama",
+        "best actress in a motion - motion picture - drama",
+        "best movie",
+        "best television series - drama",
+        "best foreign language",
+        "best actor - musical - comedy",
+        "best actor in a motion - motion picture - musical - comedy",
+        "best actor in a tv"
+    ]
 }

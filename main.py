@@ -8,7 +8,7 @@ __version__ = '1.0'
 __author__ = 'Hugo Zhang'
 
 # System imports.
-from helpers_system import pos_tag_text, chunk_tagged_text
+from helpers_system import pos_tag_text, chunk_tagged_text, pretty_print_answers
 from regex_system import get_actors, get_media, get_award, award_type_check, expand_hashtags
 from type_system import getAwardType, isMovie, isShow
 
@@ -16,16 +16,12 @@ from type_system import getAwardType, isMovie, isShow
 import json
 from collections import Counter
 import timeit
+import re
 
 OFFICIAL_AWARDS_1315 = ['cecil b. demille award', 'best motion picture - drama', 'best performance by an actress in a motion picture - drama', 'best performance by an actor in a motion picture - drama', 'best motion picture - comedy or musical', 'best performance by an actress in a motion picture - comedy or musical', 'best performance by an actor in a motion picture - comedy or musical', 'best animated feature film', 'best foreign language film', 'best performance by an actress in a supporting role in a motion picture', 'best performance by an actor in a supporting role in a motion picture', 'best director - motion picture', 'best screenplay - motion picture', 'best original score - motion picture', 'best original song - motion picture', 'best television series - drama', 'best performance by an actress in a television series - drama', 'best performance by an actor in a television series - drama', 'best television series - comedy or musical', 'best performance by an actress in a television series - comedy or musical', 'best performance by an actor in a television series - comedy or musical', 'best mini-series or motion picture made for television', 'best performance by an actress in a mini-series or motion picture made for television', 'best performance by an actor in a mini-series or motion picture made for television', 'best performance by an actress in a supporting role in a series, mini-series or motion picture made for television', 'best performance by an actor in a supporting role in a series, mini-series or motion picture made for television']
 
 answer_json = {
     "host": "",
-    "cecil b. demille award": {
-        "presenters": [],
-        "nominees": [],
-        "winner": "",
-    },
     "best motion picture - drama": {
         "presenters": [],
         "nominees": [],
@@ -151,6 +147,11 @@ answer_json = {
         "nominees": [],
         "winner": "",
     },
+    "cecil b. demille award": {
+        "presenters": [],
+        "nominees": [],
+        "winner": "",
+    },
 }
 
 def main():
@@ -164,8 +165,13 @@ def main():
     host_tally = dict()
 
     w = open('gg2013-winner.json')
-    data = json.load(w)
+    winner_data = json.load(w)
     winner_tally = dict()
+    award_name_tally = dict()
+    # Additional goals using winner data.
+    best_dressed_tally = dict()
+    best_acceptance_speech_tally = dict()
+    best_old_man_crush_tally = dict()
 
     p = open('gg2013-presenter.json')
     presenter_data = json.load(p)
@@ -184,19 +190,60 @@ def main():
         for entity in result:
             host_tally[entity] = host_tally.get(entity, 0) + 1
         lim = lim + 1
+        # Truncate function earlier because it's already conclusive.
         if lim == 10: break
     
     c = Counter(host_tally)
     top_two_results = c.most_common(2)
-    print("Dictionary after the increment of key : " + str(host_tally))
+    # Uncomment this line if you want to view the entire tallied dictionary of phrases.
+    # print("Dictionary after the increment of key : " + str(host_tally))
     print("Top five hosts:", top_two_results)
     answer_json["host"] = [top_two_results[0][0], top_two_results[1][0]]
 
     lim = 0
 
-    # Determine winners from award names.
+    # Determine award names.
+    keywords = ["motion picture", "musical", "comedy", "drama"]
+    for tweet in winner_data:
+        tweet_text = tweet["text"]
+
+        # Skip awards without "best" to speed up iterations.
+        if tweet_text.lower().find("best") == -1:
+            continue
+        
+        # Tag parts of speech.
+        lowercase_original_tweet = pos_tag_text(tweet_text, True, False)
+
+        # Award Category chunking RegEx.
+        # Grammar rule: optional determiner (DD), superlative adverb/adjective (best), any number of adjectives (JJ), noun (actor)
+        # Ex. the (DD) Best (RBS) Supporting (JJ) Actress (NN)
+        category_grammar = "Award Category: {<RBS|JJS><JJ|NN>?<NN.*>*?<IN>?<DT>?<JJ.*>*<NN>}"
+        category_chunks = chunk_tagged_text(lowercase_original_tweet, category_grammar, False)
+        
+        for identified_award in category_chunks:
+            full_award = identified_award
+            for keyword in keywords:
+                # Key mentioned in tweet but not already mentioned in award name, so must be a category.
+                if tweet_text.lower().find(keyword) != -1 and full_award.lower().find(keyword) == -1:
+                    full_award = full_award + " - " + keyword
+            award_name_tally[full_award] = award_name_tally.get(full_award, 0) + 1
+
+        lim = lim + 1
+        if lim % 1000 == 0: print(lim)
+
+    c = Counter(award_name_tally)
+    top_award_results = c.most_common(26)
+    # Uncomment this line if you want to view the entire tallied dictionary of phrases.
+    # print("Dictionary after the increment of key : " + str(award_name_tally))
+    print("Top 26 mined award names:", top_award_results)
+    answer_json["awards"] = [award[0] for award in top_award_results]
+
+    lim = 0
+
+    # Determine winners from hardcoded award names to 
+    # prevent cascading errors from award name mining.
     for award_category in OFFICIAL_AWARDS_1315:
-        for tweet in data:
+        for tweet in winner_data:
             tweet_text = tweet["text"]
 
             if award_type_check(tweet_text, award_category):
@@ -215,6 +262,8 @@ def main():
         lim = 0
         c = Counter(winner_tally)
         top_three_results = c.most_common(3)
+        # Uncomment this line if you want to view the entire tallied dictionary of phrases.
+        # print("Dictionary after the increment of key : " + str(winner_tally))
         print(award_category, top_three_results)
         if top_three_results != []:
             answer_json[award_category]["winner"] = top_three_results[0][0]
@@ -240,6 +289,8 @@ def main():
             if lim % 1000 == 0: print(award_category, lim)
         c = Counter(presenter_tally)
         top_five_results = c.most_common(5)
+        # Uncomment this line if you want to view the entire tallied dictionary of phrases.
+        # print("Dictionary after the increment of key : " + str(presenter_tally))
         print("Top Five Presenters (if any):", top_five_results)
         if top_five_results != []:
             answer_json[award_category]["presenters"] = top_five_results[0][0]
@@ -272,8 +323,55 @@ def main():
         if top_five_results != []:
             for nominee in top_five_results:
                 nominees.append(nominee[0])
+        # Uncomment this line if you want to view the entire tallied dictionary of phrases.
+        # print("Dictionary after the increment of key : " + str(nominee_tally))
         answer_json[award_category]["nominees"] = nominees
         nominee_tally.clear()
+
+    lim = 0
+
+    # Determine additional goals including best dressed, best acceptance speech, and best old man crush.
+    for tweet in winner_data:
+        tweet_text = tweet["text"]
+
+        # Skip awards without "best" to speed up iterations.
+        best_dressed_regex = re.compile(r'[Bb]est [Dd]ress')
+        best_acceptance_speech_regex = re.compile(r'(?:acceptance)? [Ss]peech')
+        best_old_man_crush_regex = re.compile(r'[Cc]rush')
+
+        if best_dressed_regex.search(tweet_text):
+            result = get_actors(tweet_text)
+            for entity in result:
+                best_dressed_tally[entity] = best_dressed_tally.get(entity, 0) + 1
+
+        if best_acceptance_speech_regex.search(tweet_text):
+            result = get_actors(tweet_text)
+            for entity in result:
+                best_acceptance_speech_tally[entity] = best_acceptance_speech_tally.get(entity, 0) + 1
+
+        if best_old_man_crush_regex.search(tweet_text):
+            result = get_actors(tweet_text)
+            for entity in result:
+                best_old_man_crush_tally[entity] = best_old_man_crush_tally.get(entity, 0) + 1
+
+        lim = lim + 1
+        if lim % 1000 == 0: print(lim)
+
+    c_dress = Counter(best_dressed_tally)
+    c_speech = Counter(best_acceptance_speech_tally)
+    c_crush = Counter(best_old_man_crush_tally)
+
+    # Uncomment these lines if you want to view the entire tallied dictionary of phrases.
+    # print("Dictionary after the increment of key : " + str(best_dressed_tally))
+    best_dressed_individual = c_dress.most_common(1)
+    # print("Dictionary after the increment of key : " + str(best_acceptance_speech_tally))
+    best_acceptance_speech = c_speech.most_common(1)
+    # print("Dictionary after the increment of key : " + str(best_old_man_crush_tally))
+    best_old_man_crush = c_crush.most_common(1)
+
+    print("Best Dressed Individual:", best_dressed_individual)
+    print("Best Acceptance Speech:", best_acceptance_speech)
+    print("Best (Old Man) Crush:", best_old_man_crush)
 
     # Write answers to file.
     with open('answers.json', 'w', encoding='utf-8') as f:
@@ -284,6 +382,12 @@ def main():
     p.close()
     n.close()
 
+    pretty_print_answers(answer_json)
+    print("\nAdditional Goals:")
+    print("Best Dressed Individual:", best_dressed_individual)
+    print("Best Acceptance Speech:", best_acceptance_speech)
+    print("Best (Old Man) Crush:", best_old_man_crush)
+    
     # Stopping the runtime timer.
     stop = timeit.default_timer()
     print('Total runtime elapsed: ', stop - start)
