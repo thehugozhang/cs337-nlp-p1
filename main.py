@@ -135,7 +135,7 @@ def main():
     n = open('gg2013-nominee.json')
     nominee_data = json.load(n)
     nominee_tally = dict()
-
+    
     lim = 0
 
     # Determine hosts.
@@ -220,7 +220,7 @@ def main():
         top_three_results = c.most_common(3)
         # Uncomment this line if you want to view the entire tallied dictionary of phrases.
         # print("Dictionary after the increment of key : " + str(winner_tally))
-        print("Top 3 winners for ", award_category, ":", top_three_results)
+        print('Top 3 winners for "' + award_category + '":', top_three_results)
         if top_three_results != []:
             answer_json["winners"][award_category] = top_three_results[0][0]
         winner_tally.clear()
@@ -249,7 +249,7 @@ def main():
         # Uncomment this line if you want to view the top tallied phrases.
         # print("Top Five Presenters (if any):", top_five_results)
         if top_five_results != []:
-            answer_json["presenters"][award_category] = [top_five_results[0][0], top_five_results[1][0]]
+            answer_json["presenters"][award_category] = [top_five_results[0][0]]
         presenter_tally.clear()
 
     lim = 0
@@ -293,27 +293,28 @@ def main():
     best_celebrity_crush_regex = re.compile(r'[Cc]rush')
 
     for tweet in winner_data:
-        tweet_text = tweet["text"]
+        if lim >= 2500:
+            tweet_text = tweet["text"]
 
-        if best_dressed_regex.search(tweet_text):
-            result = get_actors(tweet_text)
-            for entity in result:
-                best_dressed_tally[entity] = best_dressed_tally.get(entity, 0) + 1
+            if best_dressed_regex.search(tweet_text):
+                result = get_actors(tweet_text)
+                for entity in result:
+                    best_dressed_tally[entity] = best_dressed_tally.get(entity, 0) + 1
 
-        if best_acceptance_speech_regex.search(tweet_text):
-            result = get_actors(tweet_text)
-            for entity in result:
-                best_acceptance_speech_tally[entity] = best_acceptance_speech_tally.get(entity, 0) + 1
+            if best_acceptance_speech_regex.search(tweet_text):
+                result = get_actors(tweet_text)
+                for entity in result:
+                    best_acceptance_speech_tally[entity] = best_acceptance_speech_tally.get(entity, 0) + 1
 
-        if best_celebrity_crush_regex.search(tweet_text):
-            result = get_actors(tweet_text)
-            for entity in result:
-                best_celebrity_crush_tally[entity] = best_celebrity_crush_tally.get(entity, 0) + 1
+            if best_celebrity_crush_regex.search(tweet_text):
+                result = get_actors(tweet_text)
+                for entity in result:
+                    best_celebrity_crush_tally[entity] = best_celebrity_crush_tally.get(entity, 0) + 1
 
         lim = lim + 1
         if lim % 1000 == 0: print("Determining additional goals. Another", lim, "tweets processed.")
         # Truncate function earlier in the interest of runtime.
-        if lim == 2000: break
+        if lim == 2750: break
 
     c_dress = Counter(best_dressed_tally)
     c_speech = Counter(best_acceptance_speech_tally)
@@ -340,15 +341,17 @@ def main():
     p.close()
     n.close()
 
+    print("\n\n\nPretty-printing total results...\n\n\n")
+
     pretty_print_answers(answer_json)
     print("\nAdditional Goals:")
-    print("Best Dressed Individual:", best_dressed_individual)
-    print("Best Acceptance Speech:", best_acceptance_speech)
-    print("Best Celebrity Crush:", best_celebrity_crush)
+    print("Best Dressed Individual:", best_dressed_individual[0][0])
+    print("Best Acceptance Speech:", best_acceptance_speech[0][0])
+    print("Best Celebrity Crush:", best_celebrity_crush[0][0])
 
     # Stopping the runtime timer.
     stop = timeit.default_timer()
-    print('Total runtime elapsed: ', stop - start)
+    print('\nTotal runtime elapsed: ', stop - start)
 
 if __name__ == "__main__":
     """ This is executed when run from the command line """
