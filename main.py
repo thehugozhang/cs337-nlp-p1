@@ -135,7 +135,7 @@ def main():
     n = open('gg2013-nominee.json')
     nominee_data = json.load(n)
     nominee_tally = dict()
-    
+
     lim = 0
 
     # Determine hosts.
@@ -154,7 +154,7 @@ def main():
     # Uncomment this line if you want to view the entire tallied dictionary of phrases.
     # print("Dictionary after the increment of key : " + str(host_tally))
     print("Top two hosts:", top_two_results)
-    answer_json["host"] = [top_two_results[0][0], top_two_results[1][0]]
+    answer_json["hosts"] = [top_two_results[0][0], top_two_results[1][0]]
 
     lim = 0
 
